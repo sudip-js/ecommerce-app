@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/v1', userRoutes)
+app.use('/api/auth', userRoutes)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

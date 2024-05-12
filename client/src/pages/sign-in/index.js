@@ -1,4 +1,4 @@
-import { Button, PasswordInput, TextInput } from "../../components/forms";
+import { Button, PasswordInput, TextInput, OAuth } from "../../components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./schema";
@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showSuccessToast } from "../../utils/toast";
 import { signIn } from "../../redux/slices/authSlice";
-import { OAuth } from "../../components";
 
 
 

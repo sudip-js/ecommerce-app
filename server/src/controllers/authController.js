@@ -5,7 +5,7 @@ import {
   signInValidationSchema,
   signUpValidationSchema,
 } from "../validations/userValidation.js";
-import { createToken } from "../utils/createToken.js";
+import { createToken } from "../utils/token.js";
 import { errorHandler } from "../utils/error.js";
 import { sendMail } from "../utils/sendMail.js";
 
@@ -103,7 +103,7 @@ export const resetPassword = async (req, res, next) => {
 };
 
 
-export const googleAuth = async (req, res, next) => {
+export const oAuth = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {

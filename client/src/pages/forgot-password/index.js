@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button, TextInput } from "../../components/forms";
+import { Button, TextInput } from "../../components";
 import { useForm } from "react-hook-form";
 import { forgotPassword } from "./actions";
 import { showSuccessToast } from "../../utils/toast";

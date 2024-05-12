@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
     (config) => {
-        config.baseURL = 'http://localhost:8090/api/v1/'
+        config.baseURL = 'http://localhost:8090/api/'
         return config;
     },
     (error) => {

@@ -8,3 +8,10 @@ export const signInWithGoogleRequest = (payload) => {
         data: payload,
     });
 };
+export const signInWithGithubRequest = (payload) => {
+    return apiClient({
+        method: ROUTES.SIGN_IN_WITH_GITHUB.METHOD,
+        url: ROUTES.SIGN_IN_WITH_GITHUB.URL,
+        data: payload,
+    });
+};

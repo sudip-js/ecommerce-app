@@ -1,12 +1,13 @@
-import { Button, PasswordInput } from "../../components/forms";
+import { Button, PasswordInput } from "../../components";
 import { useForm } from "react-hook-form";
 import { resetPassword } from "./actions";
 import { showSuccessToast } from "../../utils/toast";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const ResetPasswordPage = () => {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
     const userId = pathname?.split('/')?.at(2)
     const access_token = pathname.split('/')?.at(3);
     const {
@@ -21,6 +22,7 @@ const ResetPasswordPage = () => {
         mutationFn: resetPassword,
         onSuccess: (data) => {
             showSuccessToast(data?.data?.message);
+            navigate('/sign-in')
         }
     })
     const handleSubmitForm = (data) => {

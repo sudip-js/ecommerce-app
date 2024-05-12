@@ -1,4 +1,4 @@
-import { Button, PasswordInput, TextInput } from "../../components/forms";
+import { Button, OAuth, PasswordInput, TextInput } from "../../components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./schema";
@@ -56,6 +56,10 @@ const SignInPage = () => {
                         {isPending ? 'Please wait...' : ' Sign Up'}
                     </Button>
                 </form>
+                <p className="mt-5 text-center text-sm text-gray-500">
+                    Or continue with
+                </p>
+                <OAuth />
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Already have an account? &nbsp;
                     <Link to='/sign-in' className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
