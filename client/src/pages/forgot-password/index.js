@@ -21,12 +21,8 @@ const ForgotPasswordPage = () => {
         }
     })
     const handleSubmitForm = (data) => {
-        const { password } = data;
-        mutate({
-            password,
-            access_token,
-            id: userId
-        })
+        const { email } = data;
+        mutate({ email })
     }
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

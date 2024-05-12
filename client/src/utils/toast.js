@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 const initialState = {
     position: 'top-right',
+    autoClose: 2000,
 }
 
 export const showSuccessToast = (message) => {

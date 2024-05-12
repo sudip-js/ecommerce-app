@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showSuccessToast } from "../../utils/toast";
 import { signIn } from "../../redux/slices/authSlice";
+import { OAuth } from "../../components";
+
+
 
 const SignInPage = () => {
     const dispatch = useDispatch();
@@ -29,9 +32,15 @@ const SignInPage = () => {
             dispatch(signIn(data?.data?.data))
         }
     })
+
     const handleSubmitForm = (data) => {
         mutate(data)
     }
+
+
+
+
+
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -62,13 +71,17 @@ const SignInPage = () => {
                     </Button>
                 </form>
 
-                <p className="mt-10 text-center text-sm text-gray-500">
-                    Don't have an account? &nbsp;
-                    <Link to='/sign-up' className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                        Sign Up
-                    </Link>
+                <p className="mt-5 text-center text-sm text-gray-500">
+                    Or continue with
                 </p>
+                <OAuth />
             </div>
+            <p className="mt-10 text-center text-sm text-gray-500">
+                Don't have an account? &nbsp;
+                <Link to='/sign-up' className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                    Sign Up
+                </Link>
+            </p>
         </div>
     )
 }

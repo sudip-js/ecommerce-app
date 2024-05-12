@@ -1,5 +1,5 @@
 import express from "express";
-import { changePassword, forgotPassword, resetPassword, signIn, signUp, updateProfile } from "../controllers/userController.js";
+import { changePassword, forgotPassword, googleAuth, resetPassword, signIn, signUp, updateProfile } from "../controllers/authController.js";
 import { verifyToken } from "../utils/createToken.js";
 
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/sign-in', signIn)
 router.post('/sign-up', signUp)
+router.post('/google', googleAuth)
 router.post('/forgot-password', forgotPassword)
 router.post('/reset-password', verifyToken, resetPassword)
 router.post('/change-password', changePassword);

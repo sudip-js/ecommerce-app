@@ -102,6 +102,51 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const { password: removePassword, ...rest } = user?._doc;
+      const access_token = createToken({
+        id: user?._id?.toString(),
+      });
+      return res.status(200).json({
+        success: true,
+        message: "User logged in successfully.",
+        data: { access_token, ...rest },
+      });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcryptjs.hash(generatedPassword, 10);
+      const newUser = new User({
+        username:
+          req.body.username?.split(' ').join('').toLowerCase() +
+          Math.random().toString(36).slice(-8),
+        email: req.body.email,
+        password: hashedPassword,
+        profilePicture: req.body.photo,
+      });
+      const result = await newUser.save();
+      const { password: hashedPassword2, ...rest } = result._doc;
+      const access_token = createToken({
+        id: result?._id?.toString(),
+      });
+      return res.status(200).json({
+        success: true,
+        message: "User logged in successfully.",
+        data: { access_token, ...rest },
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
 export const changePassword = async (req, res, next) => {
   try {
     res.status(200).json({ success: true, message: "change-password" });
@@ -117,3 +162,7 @@ export const updateProfile = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Something went wrong!" });
   }
 };
+
+
+
+
