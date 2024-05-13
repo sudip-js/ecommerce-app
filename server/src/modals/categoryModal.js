@@ -6,7 +6,16 @@ const categoryModal = new Schema({
     name: {
         type: String,
         required: true
-    }
+    },
+    thumbnail: {
+        type: String,
+        required: true
+    },
+    discount_percentage: {
+        type: Number,
+        required: true
+    },
+
 }, {
     timestamps: true
 });
