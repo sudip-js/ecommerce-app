@@ -1,13 +1,13 @@
 import bcryptjs from "bcryptjs";
-import User from "../modals/userModal.js";
+import User from "../../modals/userModal.js";
 import {
   forgotPasswordValidationSchema,
   signInValidationSchema,
   signUpValidationSchema,
-} from "../validations/userValidation.js";
-import { createToken } from "../utils/token.js";
-import { errorHandler } from "../utils/error.js";
-import { sendMail } from "../utils/sendMail.js";
+} from "../../validations/userValidation.js";
+import { createToken } from "../../utils/token.js";
+import { errorHandler } from "../../utils/error.js";
+import { sendMail } from "../../utils/sendMail.js";
 
 export const signIn = async (req, res, next) => {
   try {
