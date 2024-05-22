@@ -100,6 +100,8 @@ export const getCategoryBasedProduct = async (req, res, next) => {
             .sort(sortOption)
             .skip((parsePage - 1) * parseLength)
             .limit(parseLength);
+
+        console.log({ data })
         res
             .status(200)
             .json({

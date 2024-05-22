@@ -11,3 +11,9 @@ router.post('/categories', getAllProductCategories);
 router.post('/category', getCategoryBasedProduct);
 
 export default router;
+
+
+
+
+const products = []
+
