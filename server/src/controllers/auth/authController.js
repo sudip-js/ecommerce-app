@@ -149,17 +149,40 @@ export const oAuth = async (req, res, next) => {
 
 export const changePassword = async (req, res, next) => {
   try {
-    res.status(200).json({ success: true, message: "change-password" });
+    const { old_password = '', new_password = '', user_id = '' } = req.body;
+    if (!user_id) return next(errorHandler(401, "Invalid user ID."));
+    if (!old_password || !new_password) return next(errorHandler(401, "All fields are required."));
+    if (old_password === new_password) return next(errorHandler(401, "New password must be different from the old password."));
+    const user = await User.findOne({ _id: user_id });
+    if (!user) return next(errorHandler(401, "User does not exist."));
+    const isMatch = await bcryptjs.compare(old_password, user.password);
+    if (!isMatch) return next(errorHandler(401, "Old password is incorrect."));
+    const hashedPassword = await bcryptjs.hash(new_password, 10);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).json({ success: true, message: "Password has been changed successfully." });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Something went wrong!" });
+    console.log({ error: error?.message })
+    return next(errorHandler(500, "Something went wrong!."));
   }
 };
 
 export const updateProfile = async (req, res, next) => {
   try {
-    res.status(200).json({ success: true, message: "update-profile" });
+    const { username = '', email = '', phone_number = '', address = '', user_id = '' } = req.body;
+    if (!user_id) return next(errorHandler(401, "Invalid user ID."));
+    const user = await User.findOne({ _id: user_id });
+    if (!user) return next(errorHandler(401, "User does not exist."));
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (phone_number) user.phone_number = phone_number;
+    if (address) user.address = address;
+    const response = await user.save();
+    const { password: removePassword, ...rest } = response?._doc;
+    res.status(200).json({ success: true, message: "Profile updated successfully.", data: { ...rest } });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Something went wrong!" });
+    console.log({ error: error?.message })
+    return next(errorHandler(500, "Something went wrong!."));
   }
 };
 
