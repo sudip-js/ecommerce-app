@@ -62,10 +62,11 @@ export const getAllProducts = async (req, res, next) => {
 export const addProductCategories = async (req, res, next) => {
     try {
         const { categories = [] } = req.body;
-        const categoriesArray = categories.map(name => ({ name }))
+        const categoriesArray = categories.map(({ name, thumbnail, discount_percentage }) => ({ name, thumbnail, discount_percentage }))
         await Category.insertMany(categoriesArray);
         res.status(200).json({ success: true, message: 'Category added successfully.' })
     } catch (error) {
+        console.log({ error })
         return next(errorHandler(500, "Something went wrong!."));
     }
 }
@@ -82,8 +83,7 @@ export const getAllProductCategories = async (req, res, next) => {
 
 export const getCategoryBasedProduct = async (req, res, next) => {
     try {
-        const { category_id } = req.params;
-        const { page = 1, length = 10, sort = "asc", sort_by = "price" } = req.body;
+        const { page = 1, length = 10, sort = "asc", sort_by = "price", category_id = '' } = req.body;
         const parsePage = parseInt(page);
         const parseLength = parseInt(length);
         let sortOption = {};
@@ -100,6 +100,8 @@ export const getCategoryBasedProduct = async (req, res, next) => {
             .sort(sortOption)
             .skip((parsePage - 1) * parseLength)
             .limit(parseLength);
+
+        console.log({ data })
         res
             .status(200)
             .json({

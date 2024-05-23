@@ -8,6 +8,12 @@ router.post('/add', addProducts);
 router.post('/list', getAllProducts);
 router.post('/categories/add', addProductCategories);
 router.post('/categories', getAllProductCategories);
-router.post('/category/:category_id', getCategoryBasedProduct);
+router.post('/category', getCategoryBasedProduct);
 
 export default router;
+
+
+
+
+const products = []
+

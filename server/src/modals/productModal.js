@@ -50,3 +50,7 @@ const productModal = new Schema({
 
 const Product = model('product', productModal);
 export default Product;
+
+
+
+

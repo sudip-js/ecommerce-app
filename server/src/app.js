@@ -5,17 +5,15 @@ import connectDB from "./db/dbConnection.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
-
-dotenv.config();
+dotenv.config({ path: 'src/.env' });
 connectDB()
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 8080;
 app.use(express.json());
-
+app.use(cors());
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
-
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Internal Server Error';
@@ -25,8 +23,5 @@ app.use((err, req, res, next) => {
         statusCode,
     });
 });
-
-
-const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))

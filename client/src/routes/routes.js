@@ -1,18 +1,28 @@
 import { Outlet, createBrowserRouter, } from "react-router-dom";
-import { ForgotPasswordPage, HomePage, PageNotFoundPage, ResetPasswordPage, SignInPage, SignUpPage } from "../pages";
+import { Cart, ForgotPasswordPage, HomePage, PageNotFoundPage, ResetPasswordPage, SignInPage, SignUpPage } from "../pages";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import { ProductOverview, ProductSection } from "../components";
+import { PublicLayout } from "../layouts";
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: <PublicRoute>
-            <Outlet />
+            <PublicLayout />
         </PublicRoute>,
         children: [
             {
                 index: true,
                 element: <HomePage />
+            },
+            {
+                path: ':id',
+                element: <ProductSection />
+            },
+            {
+                path: ':id/:id',
+                element: <ProductOverview />
             },
             {
                 path: "sign-in",
@@ -29,6 +39,10 @@ const router = createBrowserRouter([
             {
                 path: "reset-password/:id/:token",
                 element: <ResetPasswordPage />
+            },
+            {
+                path: "cart",
+                element: <Cart />
             },
         ]
     },
