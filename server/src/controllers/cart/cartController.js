@@ -1,92 +1,183 @@
 import { errorHandler } from "../../utils/error.js";
 import Cart from "../../modals/cartModal.js";
 import Product from "../../modals/productModal.js";
+import User from "../../modals/userModal.js";
+import { isValidObjectId } from "mongoose";
 
 export const addToCart = async (req, res, next) => {
     try {
         const { user_id = '', product_id = '', quantity = 1 } = req.body;
-        let data = null;
-        if (!user_id || !product_id) return next(errorHandler(422, 'Invalid user or product ID'));
-        let cart = await Cart.findOne({ user_id: user_id });
-        const productDetails = await Product.findOne({ _id: product_id });
+        if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
 
+        const user = await User.exists({ _id: user_id });
+        const productDetails = await Product.exists({ _id: product_id });
+
+        if (!user) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!productDetails) return next(errorHandler(422, 'Invalid product.'));
+
+        const product = await Product.findOne({ _id: product_id });
+        let cart = await Cart.findOne({ user_id });
+
+        let response = null;
         if (cart) {
-            let indexFound = cart.items.findIndex(p => String(p?.product_id) == product_id);
-            if (indexFound != -1) {
-                console.log({ thumbnail: productDetails?.thumbnail })
-                cart.items[indexFound].quantity = cart.items[indexFound].quantity + quantity;
-                cart.items[indexFound].total = cart.items[indexFound].quantity * productDetails.price;
-                cart.items[indexFound].price = productDetails.price;
-                cart.items[indexFound].rating = productDetails.rating;
-                cart.items[indexFound].title = productDetails.title;
-                cart.items[indexFound].description = productDetails.description;
-                cart.items[indexFound].brand = productDetails.brand;
-                cart.items[indexFound].category = productDetails.category;
-                cart.items[indexFound].thumbnail = productDetails.thumbnail;
-                cart.sub_total = cart.items.map(item => item.total).reduce((acc, curr) => acc + curr);
+            const itemIndex = cart.items.findIndex((p) => p.product_id == product_id);
+            if (itemIndex !== -1) {
                 cart.user_id = user_id;
-            }
-            else if (quantity > 0) {
+                cart.items[itemIndex].product_id = product_id;
+                cart.items[itemIndex].quantity = cart.items[itemIndex].quantity + quantity;
+                cart.items[itemIndex].price = product?.price;
+                cart.items[itemIndex].total = cart.items[itemIndex].quantity * product.price;
+                cart.items[itemIndex].rating = product?.rating;
+                cart.items[itemIndex].title = product?.title;
+                cart.items[itemIndex].description = product?.description;
+                cart.items[itemIndex].brand = product?.brand;
+                cart.items[itemIndex].category = product?.category;
+                cart.items[itemIndex].thumbnail = product?.thumbnail;
+                cart.sub_total = parseInt(cart.items.map(item => parseInt(item?.total)).reduce((acc, next) => acc + next));
+            } else {
+                cart.user_id = user_id;
                 cart.items.push({
-                    product_id: product_id,
-                    quantity: quantity,
-                    price: productDetails.price,
-                    total: parseInt(productDetails.price * quantity).toFixed(2),
-                    rating: productDetails.rating,
-                    title: productDetails.title,
-                    description: productDetails.description,
-                    brand: productDetails.brand,
-                    category: productDetails.category,
-                    thumbnail: productDetails.thumbnail,
-                })
-                cart.sub_total = cart.items.map(item => item.total).reduce((acc, curr) => acc + curr);
+                    product_id,
+                    quantity,
+                    price: product?.price || 0,
+                    total: parseInt(product?.price * quantity) || 0,
+                    rating: product?.rating || 0,
+                    title: product?.title || '',
+                    description: product?.description || '',
+                    brand: product?.brand || '',
+                    category: product?.category || '',
+                    thumbnail: product?.thumbnail || '',
+                });
+                cart.sub_total = parseInt(cart.items.map(item => parseInt(item?.total)).reduce((acc, next) => acc + next));
             }
-            else {
-                return next(errorHandler(400, 'Invalid Request'))
-            }
-            data = await cart.save();
+            response = await cart.save();
         } else {
-            const cartData = {
-                user_id: user_id,
+            const newItem = new Cart({
+                user_id,
                 items: [{
-                    product_id: product_id,
-                    quantity: quantity,
-                    price: productDetails.price,
-                    total: parseInt(productDetails.price * quantity),
-                    rating: productDetails.rating,
-                    title: productDetails.title,
-                    description: productDetails.description,
-                    brand: productDetails.brand,
-                    category: productDetails.category,
-                    thumbnail: productDetails.thumbnail,
+                    product_id,
+                    quantity,
+                    price: product?.price || 0,
+                    total: parseInt(product?.price * quantity) || 0,
+                    rating: product?.rating || 0,
+                    title: product?.title || '',
+                    description: product?.description || '',
+                    brand: product?.brand || '',
+                    category: product?.category || '',
+                    thumbnail: product?.thumbnail || '',
                 }],
-                sub_total: parseInt(productDetails.price * quantity)
-            }
-            cart = new Cart(cartData);
-            data = await cart.save();
+                sub_total: parseInt(product?.price * quantity) || 0
+            });
+            response = await newItem.save();
         }
-        return res.status(200).send({
-            code: 200,
-            message: "Add to Cart successfully!",
-            data
+        return res.status(201).json({
+            success: true,
+            message: "Product added in cart",
+            data: response
+        });
+
+    } catch (error) {
+        console.error({ err: error?.message });
+        return next(errorHandler(500, "Something went wrong!."));
+    }
+}
+
+export const getCart = async (req, res, next) => {
+    try {
+        const { user_id = '', } = req.body;
+        if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
+
+        const user = await User.exists({ _id: user_id });
+        if (!user) {
+            return next(errorHandler(422, 'Invalid user ID.'));
+        }
+        const cart = await Cart.findOne({ user_id: user_id });
+        if (!cart) {
+            return next(errorHandler(404, 'Cart not found for this user.'));
+        }
+        return res.status(201).json({
+            success: true,
+            message: "All cart items.",
+            data: cart
         });
     } catch (error) {
-        console.log({ error: error.message })
-        return next(errorHandler(500, 'Something went wrong!'))
+        console.error({ err: error?.message });
+        return next(errorHandler(500, "Something went wrong!."));
+    }
+};
 
-    }
-}
-export const removeToCart = (req, res, next) => {
+
+
+
+export const removeToCart = async (req, res, next) => {
     try {
-        return res.status(200).json({ message: "removeToCart" })
+        const { user_id = '', product_id = '', } = req.body;
+        if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
+        const user = await User.exists({ _id: user_id });
+        const productDetails = await Product.exists({ _id: product_id });
+        if (!user) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!productDetails) return next(errorHandler(422, 'Invalid product.'));
+        let cart = await Cart.findOne({ user_id });
+        if (!cart) {
+            return next(errorHandler(404, 'Cart not found for this user.'));
+        }
+        const itemIndex = cart.items.findIndex((p) => p.product_id == product_id);
+        if (itemIndex > -1) {
+            cart.items.splice(itemIndex, 1);
+            cart = await cart.save();
+            return res.status(200).json({
+                success: true,
+                message: "Product removed successfully.",
+            });
+        }
+        return res.status(400).json({
+            success: true,
+            message: "Item does not exist in cart.",
+        });
     } catch (error) {
-        return res.status(500).json({ message: "Something went wrong!" })
+        console.error({ err: error?.message });
+        return next(errorHandler(500, "Something went wrong!."));
     }
-}
-export const decreaseCartQty = (req, res, next) => {
+};
+
+
+
+
+
+export const decreaseCartQty = async (req, res, next) => {
     try {
-        return res.status(200).json({ message: "decreaseCartQty" })
+        const { user_id = '', product_id = '', } = req.body;
+        if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
+        const user = await User.exists({ _id: user_id });
+        const productDetails = await Product.exists({ _id: product_id });
+        if (!user) return next(errorHandler(422, 'Invalid user ID.'));
+        if (!productDetails) return next(errorHandler(422, 'Invalid product.'));
+        let cart = await Cart.findOne({ user_id });
+        if (!cart) {
+            return next(errorHandler(404, 'Cart not found for this user.'));
+        }
+        const itemIndex = cart.items.findIndex((p) => p.product_id == product_id);
+        if (itemIndex > -1) {
+            let productItem = cart.items[itemIndex];
+            productItem.total = productItem.total - productItem.price;
+            productItem.quantity -= 1;
+            cart.items[itemIndex] = productItem;
+            cart.sub_total = parseInt(cart.items.map(item => parseInt(item?.total)).reduce((acc, next) => acc + next));
+            cart = await cart.save();
+            return res.status(200).json({
+                success: true,
+                message: "Quantity decreased successfully.",
+            });
+        }
+        return res.status(400).json({
+            success: true,
+            message: "Item does not exist in cart.",
+        });
     } catch (error) {
-        return res.status(500).json({ message: "Something went wrong!" })
+        console.error({ err: error?.message });
+        return next(errorHandler(500, "Something went wrong!."));
     }
-}
+};
