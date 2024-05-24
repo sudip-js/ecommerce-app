@@ -21,5 +21,5 @@ const categoryModal = new Schema({
 });
 
 
-const Category = model('category', categoryModal);
+const Category = model('Category', categoryModal);
 export default Category;

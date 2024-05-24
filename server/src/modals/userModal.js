@@ -32,5 +32,5 @@ const userModal = new Schema({
 });
 
 
-const User = model('user', userModal);
+const User = model('User', userModal);
 export default User;

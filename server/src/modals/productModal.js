@@ -48,7 +48,7 @@ const productModal = new Schema({
 });
 
 
-const Product = model('product', productModal);
+const Product = model('Product', productModal);
 export default Product;
 
 
