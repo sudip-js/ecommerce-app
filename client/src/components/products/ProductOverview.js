@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { RadioGroup } from '@headlessui/react'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { addToCart, fetchCategoryProduct } from './actions'
+import { useQuery } from '@tanstack/react-query'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { fetchCategoryProduct } from './actions'
 import { useSelector } from 'react-redux'
-import { showSuccessToast } from '../../utils/toast'
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -65,7 +64,6 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const removeHyphenFromURL = (url) => url?.replaceAll('-', ' ')
 
 
 const ProductOverview = () => {
@@ -84,28 +82,15 @@ const ProductOverview = () => {
         select: data => data?.data?.data
     });
 
-    const { isPending: isPendingAddToCart, mutate: mutateAddToCart } = useMutation({
-        mutationFn: addToCart,
-        onSuccess: (data) => {
-            showSuccessToast(data?.data?.message);
-        }
-    })
+
 
     const ratingArr = productsData?.rating ? (
         new Array(Math.floor(productsData?.rating)).fill('')
     ) : [];
 
-
-    console.log({ user })
-
     const handleAddToBag = () => {
         if (!user) return navigate('/sign-in');
-        mutateAddToCart({
-            user_id: user?._id,
-            product_id: productsData?._id,
-            quantity: 1
-        })
-
+        console.log({ productsData })
     }
 
     return (
@@ -247,8 +232,8 @@ const ProductOverview = () => {
                             <div className="mt-10">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-sm font-medium text-gray-900">Size</h3>
-                                    <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                        Size guide
+                                    <a className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                                        Size Guide test
                                     </a>
                                 </div>
 
@@ -309,9 +294,8 @@ const ProductOverview = () => {
                                 type="button"
                                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 onClick={handleAddToBag}
-                                disabled={isPendingAddToCart}
                             >
-                                {isPendingAddToCart ? 'Please wait...' : "Add to Cart"}
+                                Add to Cart
                             </button>
                         </form>
                     </div>

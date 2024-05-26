@@ -5,7 +5,6 @@ import connectDB from "./db/dbConnection.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-import cartRoutes from "./routes/cartRoutes.js";
 
 dotenv.config({ path: './src/.env' });
 connectDB()
@@ -19,7 +18,6 @@ app.use(cors());
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/cart', cartRoutes);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

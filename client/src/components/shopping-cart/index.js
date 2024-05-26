@@ -1,36 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react'
-import { fetchCartsItems, removeItemFromCart } from './actions';
+import { fetchCartsItems } from './actions';
 import { useSelector } from 'react-redux';
-import { showSuccessToast } from '../../utils/toast';
 
-const products = [
-    {
-        id: 1,
-        name: 'Throwback Hip Bag',
-        href: '#',
-        color: 'Salmon',
-        price: '$90.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-        imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-    },
-    {
-        id: 2,
-        name: 'Medium Stuff Satchel',
-        href: '#',
-        color: 'Blue',
-        price: '$32.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-        imageAlt:
-            'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-    },
-    // More products...
-]
 
 const ShoppingCart = () => {
-    console.log('rerender....')
     const queryClient = useQueryClient();
     const { user } = useSelector(({ auth }) => auth);
     const [quantity, setQuantity] = useState([])
@@ -42,22 +16,8 @@ const ShoppingCart = () => {
         select: data => data?.data
     });
 
-
-
-    const { isPending: isPendingRemoveItemFromCart, mutate: mutateRemoveItemFromCart } = useMutation({
-        mutationFn: removeItemFromCart,
-        onSuccess: (data) => {
-            queryClient.invalidateQueries("fetchCartsItems");
-            showSuccessToast(data?.data?.message);
-        }
-    })
-
     const handleRemoveItem = (product_id) => {
-        console.log({ product_id, user })
-        mutateRemoveItemFromCart({
-            user_id: user?._id,
-            product_id
-        })
+        console.log({ product_id })
     }
 
 
@@ -127,8 +87,7 @@ const ShoppingCart = () => {
                                                 type="button"
                                                 className="font-medium text-indigo-600 hover:text-indigo-500"
                                                 onClick={() => handleRemoveItem(product?._id)}
-                                                disabled={isPendingRemoveItemFromCart}
-                                            >{isPendingRemoveItemFromCart ? 'Please wait' : "Remove"}
+                                            >Remove
                                             </button>
                                         </div>
                                     </div>

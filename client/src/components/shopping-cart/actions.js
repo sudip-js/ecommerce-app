@@ -8,11 +8,4 @@ export const fetchCartsItems = (data = {}) => {
         data
     });
 };
-export const removeItemFromCart = (data = {}) => {
-    return apiClient({
-        method: ROUTES.REMOVE_ITEM_FROM_CART.METHOD,
-        url: ROUTES.REMOVE_ITEM_FROM_CART.URL,
-        data
-    });
-};
 

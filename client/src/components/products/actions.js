@@ -15,10 +15,4 @@ export const fetchCategoryProduct = (data = {}) => {
         data
     });
 };
-export const addToCart = (data = {}) => {
-    return apiClient({
-        method: ROUTES.ADD_TO_CART.METHOD,
-        url: ROUTES.ADD_TO_CART.URL,
-        data
-    });
-};
+
