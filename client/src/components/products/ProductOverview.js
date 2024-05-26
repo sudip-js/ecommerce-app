@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { RadioGroup } from '@headlessui/react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { addToCart, fetchCategoryProduct } from './actions'
+import { useSelector } from 'react-redux'
+import { showSuccessToast } from '../../utils/toast'
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -54,43 +59,80 @@ const product = {
     details:
         'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
 }
-const reviews = { href: '#', average: 4, totalCount: 117 }
+const reviews = { href: '#', average: 3, totalCount: 117 }
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+const removeHyphenFromURL = (url) => url?.replaceAll('-', ' ')
+
+
 const ProductOverview = () => {
-    const [selectedColor, setSelectedColor] = useState(product.colors[0])
-    const [selectedSize, setSelectedSize] = useState(product.sizes[2])
+    const { user } = useSelector(({ auth }) => auth);
+    const navigate = useNavigate();
+    const reviewCashed = useMemo(() => Math.floor(Math.random() * 501), []);
+    const [selectedColor, setSelectedColor] = useState({ name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' })
+    const [selectedSize, setSelectedSize] = useState(
+        { name: 'XS', inStock: true },
+    )
+    const { state = {} } = useLocation();
+    const { product: productState = {} } = state;
+    const { data: productsData = {} } = useQuery({
+        queryKey: ['fetchCategoryProduct', productState?.category, productState?.title],
+        queryFn: () => fetchCategoryProduct({ category_id: productState?.category, product_title: productState?.title }),
+        select: data => data?.data?.data
+    });
+
+    const { isPending: isPendingAddToCart, mutate: mutateAddToCart } = useMutation({
+        mutationFn: addToCart,
+        onSuccess: (data) => {
+            showSuccessToast(data?.data?.message);
+        }
+    })
+
+    const ratingArr = productsData?.rating ? (
+        new Array(Math.floor(productsData?.rating)).fill('')
+    ) : [];
+
+
+    console.log({ user })
+
+    const handleAddToBag = () => {
+        if (!user) return navigate('/sign-in');
+        mutateAddToCart({
+            user_id: user?._id,
+            product_id: productsData?._id,
+            quantity: 1
+        })
+
+    }
 
     return (
         <div className="bg-white">
             <div className="pt-6">
                 <nav aria-label="Breadcrumb">
                     <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-                        {product.breadcrumbs.map((breadcrumb) => (
-                            <li key={breadcrumb.id}>
-                                <div className="flex items-center">
-                                    <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
-                                        {breadcrumb.name}
-                                    </a>
-                                    <svg
-                                        width={16}
-                                        height={20}
-                                        viewBox="0 0 16 20"
-                                        fill="currentColor"
-                                        aria-hidden="true"
-                                        className="h-5 w-4 text-gray-300"
-                                    >
-                                        <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-                                    </svg>
-                                </div>
-                            </li>
-                        ))}
+                        <li>
+                            <div className="flex items-center">
+                                <Link to={`/${productState?.category}`} className="mr-2 text-sm font-medium text-gray-900">
+                                    {productState?.category}
+                                </Link>
+                                <svg
+                                    width={16}
+                                    height={20}
+                                    viewBox="0 0 16 20"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                    className="h-5 w-4 text-gray-300"
+                                >
+                                    <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                                </svg>
+                            </div>
+                        </li>
                         <li className="text-sm">
                             <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
-                                {product.name}
+                                {productsData?.title}
                             </a>
                         </li>
                     </ol>
@@ -100,31 +142,31 @@ const ProductOverview = () => {
                 <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
                     <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
                         <img
-                            src={product.images[0].src}
-                            alt={product.images[0].alt}
+                            src={productsData?.images?.[0]}
+                            alt={''}
                             className="h-full w-full object-cover object-center"
                         />
                     </div>
                     <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
                         <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
                             <img
-                                src={product.images[1].src}
-                                alt={product.images[1].alt}
+                                src={productsData?.images?.[1]}
+                                alt={''}
                                 className="h-full w-full object-cover object-center"
                             />
                         </div>
                         <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
                             <img
-                                src={product.images[2].src}
-                                alt={product.images[2].alt}
+                                src={productsData?.images?.[2]}
+                                alt={''}
                                 className="h-full w-full object-cover object-center"
                             />
                         </div>
                     </div>
                     <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
                         <img
-                            src={product.images[3].src}
-                            alt={product.images[3].alt}
+                            src={productsData?.images?.[3]}
+                            alt={''}
                             className="h-full w-full object-cover object-center"
                         />
                     </div>
@@ -133,33 +175,33 @@ const ProductOverview = () => {
                 {/* Product info */}
                 <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
                     <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{productsData?.title}</h1>
                     </div>
 
                     {/* Options */}
                     <div className="mt-4 lg:row-span-3 lg:mt-0">
                         <h2 className="sr-only">Product information</h2>
-                        <p className="text-3xl tracking-tight text-gray-900">{product.price}</p>
+                        <p className="text-3xl tracking-tight text-gray-900">${productsData?.price}</p>
 
                         {/* Reviews */}
                         <div className="mt-6">
                             <h3 className="sr-only">Reviews</h3>
                             <div className="flex items-center">
                                 <div className="flex items-center">
-                                    {[0, 1, 2, 3, 4].map((rating) => (
-                                        <StarIcon
-                                            key={rating}
+                                    {
+                                        ratingArr?.map((_, index) => <StarIcon
+                                            key={index}
                                             className={classNames(
-                                                reviews.average > rating ? 'text-gray-900' : 'text-gray-200',
+                                                reviews.average > index ? 'text-gray-900' : 'text-gray-200',
                                                 'h-5 w-5 flex-shrink-0'
                                             )}
                                             aria-hidden="true"
-                                        />
-                                    ))}
+                                        />)
+                                    }
                                 </div>
                                 <p className="sr-only">{reviews.average} out of 5 stars</p>
                                 <a href={reviews.href} className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                    {reviews.totalCount} reviews
+                                    {reviewCashed} reviews
                                 </a>
                             </div>
                         </div>
@@ -172,7 +214,7 @@ const ProductOverview = () => {
                                 <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
                                     <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
                                     <div className="flex items-center space-x-3">
-                                        {product.colors.map((color) => (
+                                        {product?.colors?.map((color) => (
                                             <RadioGroup.Option
                                                 key={color.name}
                                                 value={color}
@@ -213,7 +255,7 @@ const ProductOverview = () => {
                                 <RadioGroup value={selectedSize} onChange={setSelectedSize} className="mt-4">
                                     <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
                                     <div className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
-                                        {product.sizes.map((size) => (
+                                        {product?.sizes?.map((size) => (
                                             <RadioGroup.Option
                                                 key={size.name}
                                                 value={size}
@@ -264,10 +306,12 @@ const ProductOverview = () => {
                             </div>
 
                             <button
-                                type="submit"
+                                type="button"
                                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                onClick={handleAddToBag}
+                                disabled={isPendingAddToCart}
                             >
-                                Add to bag
+                                {isPendingAddToCart ? 'Please wait...' : "Add to Cart"}
                             </button>
                         </form>
                     </div>
@@ -278,20 +322,18 @@ const ProductOverview = () => {
                             <h3 className="sr-only">Description</h3>
 
                             <div className="space-y-6">
-                                <p className="text-base text-gray-900">{product.description}</p>
+                                <p className="text-base text-gray-900"><b>{productsData.description}</b> Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi ducimus officiis nostrum ad asperiores, atque id dolores eum nihil corrupti nesciunt doloremque ipsa nulla quam consequuntur similique facilis fuga ullam autem? Voluptates iste minima at quod dolor perferendis pariatur maiores nisi porro excepturi eaque, distinctio, deserunt officiis itaque sapiente? Est.</p>
                             </div>
                         </div>
 
                         <div className="mt-10">
-                            <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
+                            <h3 className="text-sm font-medium text-gray-900">Brand</h3>
 
                             <div className="mt-4">
                                 <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                                    {product.highlights.map((highlight) => (
-                                        <li key={highlight} className="text-gray-400">
-                                            <span className="text-gray-600">{highlight}</span>
-                                        </li>
-                                    ))}
+                                    <li className="text-gray-400">
+                                        <span className="text-gray-600">{productsData?.brand}</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -300,7 +342,7 @@ const ProductOverview = () => {
                             <h2 className="text-sm font-medium text-gray-900">Details</h2>
 
                             <div className="mt-4 space-y-6">
-                                <p className="text-sm text-gray-600">{product.details}</p>
+                                <p className="text-sm text-gray-600"><b>{productsData?.description}</b> - Lorem ipsum dolor, sit amet consectetur adipisicing elit. In quos asperiores itaque dicta quas laborum ab illo assumenda, odio ipsam placeat quidem praesentium, officia neque iure explicabo! Expedita est quis nobis corporis vitae! Nihil ex ipsa vitae ab voluptatum eum, aperiam earum soluta quis suscipit tempora autem doloremque obcaecati necessitatibus?</p>
                             </div>
                         </div>
                     </div>

@@ -1,21 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getAllCategories } from "./actions";
-
-// {
-//     name: 'Travel',
-//     description: 'Daily commute essentials',
-//     imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-03.jpg',
-//     imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
-//     href: '#',
-// },
-
+import { fetchCategories } from "./actions";
 
 const CategoryPreview = ({ label = '' }) => {
     const navigate = useNavigate();
     const { data: categoriesData } = useQuery({
-        queryKey: ['get-all-categories'],
-        queryFn: getAllCategories,
+        queryKey: ['fetchCategories'],
+        queryFn: fetchCategories,
         select: data => data?.data
     });
     return (

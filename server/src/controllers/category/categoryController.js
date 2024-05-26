@@ -14,7 +14,7 @@ export const addCategories = async (req, res, next) => {
     }
 }
 
-export const getAllCategories = async (req, res, next) => {
+export const fetchCategories = async (req, res, next) => {
     try {
         const data = await Category.find({});
         res.status(200).json({ success: true, message: 'All Categories', data })
@@ -23,10 +23,9 @@ export const getAllCategories = async (req, res, next) => {
     }
 }
 
-export const getCategoryBasedProducts = async (req, res, next) => {
+export const fetchCategory = async (req, res, next) => {
     try {
-        const { params: { category_id = '' } = {} } = req || {};
-        const { page = 1, length = 10, sort = "asc", sort_by = "price" } = req.body;
+        const { page = 1, length = 10, sort = "asc", sort_by = "price", category_id = '' } = req.body;
         const parsePage = parseInt(page);
         const parseLength = parseInt(length);
         let sortOption = {};
@@ -60,9 +59,9 @@ export const getCategoryBasedProducts = async (req, res, next) => {
     }
 };
 
-export const getCategoryBasedProduct = async (req, res, next) => {
+export const fetchCategoryProduct = async (req, res, next) => {
     try {
-        const { params: { category_id = '', product_title = '' } = {} } = req || {};
+        const { body: { category_id = '', product_title = '' } = {} } = req || {};
         if (!category_id || !product_title) return next(errorHandler(500, "Category ID or Product Title is required!."));
         const product = await Product.findOne({ category: category_id, title: product_title });
         res

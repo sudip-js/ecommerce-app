@@ -1,16 +1,12 @@
-import { Outlet, createBrowserRouter, } from "react-router-dom";
+import { createBrowserRouter, } from "react-router-dom";
 import { Cart, ForgotPasswordPage, HomePage, PageNotFoundPage, ResetPasswordPage, SignInPage, SignUpPage } from "../pages";
-import PublicRoute from "./PublicRoute";
-import ProtectedRoute from "./ProtectedRoute";
 import { ProductOverview, ProductSection } from "../components";
 import { PublicLayout } from "../layouts";
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <PublicRoute>
-            <PublicLayout />
-        </PublicRoute>,
+        element: <PublicLayout />,
         children: [
             {
                 index: true,
@@ -44,18 +40,6 @@ const router = createBrowserRouter([
                 path: "cart",
                 element: <Cart />
             },
-        ]
-    },
-    {
-        path: '/',
-        element: <ProtectedRoute>
-            <Outlet />
-        </ProtectedRoute>,
-        children: [
-            {
-                path: 'dashboard',
-                element: <h1>Dashboard</h1>
-            }
         ]
     },
     {

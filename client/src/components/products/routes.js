@@ -1,6 +1,14 @@
 export const ROUTES = {
-    GET_CATEGORIES_BASED_PRODUCTS: {
+    FETCH_CATEGORY: {
         METHOD: 'POST',
-        URL: 'products/category',
-    }
+        URL: 'categories/fetch-category',
+    },
+    FETCH_CATEGORY_PRODUCT: {
+        METHOD: 'POST',
+        URL: 'categories/fetch-category-product',
+    },
+    ADD_TO_CART: {
+        METHOD: 'POST',
+        URL: 'cart/add',
+    },
 }

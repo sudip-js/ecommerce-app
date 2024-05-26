@@ -1,10 +1,24 @@
 import { apiClient } from '../../services/apis';
 import { ROUTES } from './routes';
 
-export const getCategoryProduct = (payload) => {
+export const fetchCategory = (data = {}) => {
     return apiClient({
-        method: ROUTES.GET_CATEGORIES_BASED_PRODUCTS.METHOD,
-        url: ROUTES.GET_CATEGORIES_BASED_PRODUCTS.URL,
-        data: payload,
+        method: ROUTES.FETCH_CATEGORY.METHOD,
+        url: ROUTES.FETCH_CATEGORY.URL,
+        data
+    });
+};
+export const fetchCategoryProduct = (data = {}) => {
+    return apiClient({
+        method: ROUTES.FETCH_CATEGORY_PRODUCT.METHOD,
+        url: ROUTES.FETCH_CATEGORY_PRODUCT.URL,
+        data
+    });
+};
+export const addToCart = (data = {}) => {
+    return apiClient({
+        method: ROUTES.ADD_TO_CART.METHOD,
+        url: ROUTES.ADD_TO_CART.URL,
+        data
     });
 };

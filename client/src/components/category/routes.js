@@ -1,6 +1,6 @@
 export const ROUTES = {
-    GET_ALL_CATEGORIES: {
+    FETCH_CATEGORIES: {
         METHOD: 'POST',
-        URL: 'products/categories',
+        URL: 'categories/fetch-categories',
     }
 }

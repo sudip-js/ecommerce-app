@@ -8,7 +8,7 @@ export const addToCart = async (req, res, next) => {
     try {
         const { user_id = '', product_id = '', quantity = 1 } = req.body;
         if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
-        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
+        if (!product_id) return next(errorHandler(422, 'Invalid product.'));
 
         const user = await User.exists({ _id: user_id });
         const productDetails = await Product.exists({ _id: product_id });
@@ -94,7 +94,11 @@ export const getCart = async (req, res, next) => {
         }
         const cart = await Cart.findOne({ user_id: user_id });
         if (!cart) {
-            return next(errorHandler(404, 'Cart not found for this user.'));
+            return res.status(200).json({
+                success: true,
+                message: "Your cart has been empty.",
+                data: null
+            });
         }
         return res.status(201).json({
             success: true,
@@ -113,10 +117,11 @@ export const getCart = async (req, res, next) => {
 export const removeToCart = async (req, res, next) => {
     try {
         const { user_id = '', product_id = '', } = req.body;
+        console.log({ user_id, product_id })
         if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
-        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
+        if (!product_id) return next(errorHandler(422, 'Invalid product.'));
         const user = await User.exists({ _id: user_id });
-        const productDetails = await Product.exists({ _id: product_id });
+        const productDetails = await Product.findOne({ _id: product_id });
         if (!user) return next(errorHandler(422, 'Invalid user ID.'));
         if (!productDetails) return next(errorHandler(422, 'Invalid product.'));
         let cart = await Cart.findOne({ user_id });
@@ -150,7 +155,7 @@ export const decreaseCartQty = async (req, res, next) => {
     try {
         const { user_id = '', product_id = '', } = req.body;
         if (!user_id || !isValidObjectId(user_id)) return next(errorHandler(422, 'Invalid user ID.'));
-        if (!product_id || !isValidObjectId(product_id)) return next(errorHandler(422, 'Invalid product.'));
+        if (!product_id) return next(errorHandler(422, 'Invalid product.'));
         const user = await User.exists({ _id: user_id });
         const productDetails = await Product.exists({ _id: product_id });
         if (!user) return next(errorHandler(422, 'Invalid user ID.'));
