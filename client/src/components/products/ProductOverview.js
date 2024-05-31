@@ -4,7 +4,8 @@ import { RadioGroup } from '@headlessui/react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { fetchCategoryProduct } from './actions'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart } from '../../redux/slices/cartSlice'
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -69,6 +70,7 @@ function classNames(...classes) {
 const ProductOverview = () => {
     const { user } = useSelector(({ auth }) => auth);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const reviewCashed = useMemo(() => Math.floor(Math.random() * 501), []);
     const [selectedColor, setSelectedColor] = useState({ name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' })
     const [selectedSize, setSelectedSize] = useState(
@@ -90,10 +92,15 @@ const ProductOverview = () => {
         new Array(Math.floor(productsData?.rating)).fill('')
     ) : [];
 
-    const handleAddToBag = () => {
+    const handleAddToCart = () => {
         if (!user) return navigate('/sign-in');
-        console.log({ productsData })
-    }
+        dispatch(addToCart(productsData));
+        navigate('/cart')
+    };
+
+
+
+
 
     return (
         <div className="bg-white">
@@ -296,7 +303,7 @@ const ProductOverview = () => {
                             <button
                                 type="button"
                                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                onClick={handleAddToBag}
+                                onClick={handleAddToCart}
                             >
                                 Add to Cart
                             </button>

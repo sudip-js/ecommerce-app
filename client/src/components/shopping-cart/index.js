@@ -1,20 +1,12 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react'
-import { fetchCartsItems } from './actions';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, clearCart, decreaseCart, getTotals, removeFromCart } from '../../redux/slices/cartSlice';
 
 
 const ShoppingCart = () => {
-    const queryClient = useQueryClient();
-    const { user } = useSelector(({ auth }) => auth);
     const [quantity, setQuantity] = useState([])
     const [open, setOpen] = useState(true);
-    const { isLoading: isLoadingCartItems, data: dataCartItems = {} } = useQuery({
-        queryKey: ['fetchCartsItems'],
-        queryFn: () => fetchCartsItems({ user_id: user?._id }),
-        enabled: !!user?._id,
-        select: data => data?.data
-    });
+    const dataCartItems = {}
 
     const handleRemoveItem = (product_id) => {
         console.log({ product_id })
@@ -23,27 +15,34 @@ const ShoppingCart = () => {
 
 
     const handleChangeQty = (e, idx) => {
-        let tempArr = [...quantity];
-        tempArr[idx].quantity = +e?.target?.value;
-        setQuantity([...tempArr])
+        console.log({ e, idx })
     }
 
+
+    const cart = useSelector((state) => state.cart);
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        let tempArr = [];
-        if (dataCartItems?.data) {
-            dataCartItems?.data?.items?.forEach((item) => {
-                tempArr.push({
-                    id: item?._id,
-                    quantity: item?.quantity
-                })
-            })
-        }
-        setQuantity([...tempArr])
-    }, [])
+        dispatch(getTotals());
+    }, [cart, dispatch]);
+
+    const handleAddToCart = (product) => {
+        dispatch(addToCart(product));
+    };
+    const handleDecreaseCart = (product) => {
+        dispatch(decreaseCart(product));
+    };
+    const handleRemoveFromCart = (product) => {
+        dispatch(removeFromCart(product));
+    };
+    const handleClearCart = () => {
+        dispatch(clearCart());
+    };
 
 
 
-    console.log({ dataCartItems, quantity })
+
+
 
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-white">
@@ -52,7 +51,7 @@ const ShoppingCart = () => {
 
                 <div className="flow-root">
                     <ul role="list" className="-my-6 divide-y divide-gray-200">
-                        {dataCartItems?.data?.items?.map((product, idx) => (
+                        {cart?.cartItems?.map((product, idx) => (
                             <li key={product._id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <img
