@@ -1,16 +1,19 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchCategory } from "./actions";
 import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 
 const removeSpaceFromURL = (url) => url?.replaceAll(' ', '-')
 
 const ProductList = () => {
-    const { pathname } = useLocation();
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const category_id = pathname.replace('/', '');
+    const { sortOption = {} } = useSelector(({ common }) => common)
+    console.log({ sortOption })
     const { data: productsData = {} } = useQuery({
-        queryKey: ['fetchCategory', category_id],
-        queryFn: () => fetchCategory({ category_id }),
+        queryKey: ['fetchCategory', category_id, sortOption?.sort, sortOption?.sort_by],
+        queryFn: () => fetchCategory({ category_id, sort_by: sortOption?.sort_by || undefined, sort: sortOption?.sort || undefined }),
         select: data => data?.data,
         enabled: !!category_id
     });
@@ -29,7 +32,7 @@ const ProductList = () => {
             <div className="mx-auto max-w-2xl px-4 py-0 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
                 <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                     {productsData?.data?.map((product) => {
-                        const { _id = '', thumbnail = "", title = '', price = '' } = product || {};
+                        const { _id = '', thumbnail = "", title = '', price = '', rating = 5 } = product || {};
                         return (
                             <div key={_id} className="group relative" onClick={() => handleNavigate(product)}>
                                 <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
@@ -47,9 +50,9 @@ const ProductList = () => {
                                                 {title}
                                             </a>
                                         </h3>
-                                        <p className="mt-1 text-sm text-gray-500">RED</p>
+                                        <p className="mt-1 text-sm text-gray-500">{rating || 5} Star(Rating)</p>
                                     </div>
-                                    <p className="text-sm font-medium text-gray-900">{price}</p>
+                                    <p className="text-sm font-medium text-gray-900">${price}</p>
                                 </div>
                             </div>
                         )

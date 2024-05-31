@@ -1,21 +1,9 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useState } from 'react'
 import { Dialog, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { signOut } from '../../redux/slices/authSlice'
 
 const navigation = {
     categories: [
@@ -145,7 +133,17 @@ function classNames(...classes) {
 }
 
 const Header = () => {
-    const [open, setOpen] = useState(false)
+    const { user = {} } = useSelector(({ auth }) => auth)
+    const [open, setOpen] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+        dispatch(signOut());
+        navigate('/')
+    }
+
 
     return (
         <div className="bg-white">
@@ -261,16 +259,28 @@ const Header = () => {
                                 </div>
 
                                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                                    <div className="flow-root">
-                                        <Link to='/sign-in' className="-m-2 block p-2 font-medium text-gray-900">
-                                            Sign in
-                                        </Link>
-                                    </div>
-                                    <div className="flow-root">
-                                        <Link to='sign-up' className="-m-2 block p-2 font-medium text-gray-900">
-                                            Create account
-                                        </Link>
-                                    </div>
+                                    {
+                                        user?.access_token ? (
+                                            <div className="flow-root">
+                                                <span onClick={handleLogout} className="-m-2 block p-2 font-medium text-gray-900 cursor-pointer">
+                                                    Log out
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="flow-root">
+                                                    <Link to='/sign-in' className="-m-2 block p-2 font-medium text-gray-900">
+                                                        Sign in
+                                                    </Link>
+                                                </div>
+                                                <div className="flow-root">
+                                                    <Link to='sign-up' className="-m-2 block p-2 font-medium text-gray-900">
+                                                        Create account
+                                                    </Link>
+                                                </div></>
+                                        )
+                                    }
+
                                 </div>
 
                                 <div className="border-t border-gray-200 px-4 py-6">
@@ -287,8 +297,8 @@ const Header = () => {
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
-                </Dialog>
-            </Transition.Root>
+                </Dialog >
+            </Transition.Root >
 
             <header className="relative bg-white z-50">
                 <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
@@ -422,13 +432,18 @@ const Header = () => {
 
                             <div className="ml-auto flex items-center">
                                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                    <Link to='sign-in' className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                                        Sign in
-                                    </Link>
-                                    <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
-                                    <Link to='sign-up' className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                                        Create account
-                                    </Link>
+                                    {
+                                        user?.access_token ? (<span onClick={() => dispatch(signOut())} className="text-sm font-medium text-gray-700 hover:text-gray-800 cursor-pointer">
+                                            Log out
+                                        </span>) : (<>
+                                            <Link to='sign-in' className="text-sm font-medium text-gray-700 hover:text-gray-800">
+                                                Sign in
+                                            </Link>
+                                            <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
+                                            <Link to='sign-up' className="text-sm font-medium text-gray-700 hover:text-gray-800">
+                                                Create account
+                                            </Link></>)
+                                    }
                                 </div>
 
                                 <div className="hidden lg:ml-8 lg:flex">
@@ -465,9 +480,9 @@ const Header = () => {
                             </div>
                         </div>
                     </div>
-                </nav>
-            </header>
-        </div>
+                </nav >
+            </header >
+        </div >
     )
 }
 export default Header;

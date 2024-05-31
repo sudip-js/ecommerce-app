@@ -4,13 +4,13 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import ProductList from './ProductList'
 import Pagination from '../pagination'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSortOption } from '../../redux/slices/commonSlice'
 
 const sortOptions = [
-    { name: 'Most Popular', href: '#', current: true },
-    { name: 'Best Rating', href: '#', current: false },
-    { name: 'Newest', href: '#', current: false },
-    { name: 'Price: Low to High', href: '#', current: false },
-    { name: 'Price: High to Low', href: '#', current: false },
+    { name: 'Best Rating', sort_by: 'rating', sort: 'asc' },
+    { name: 'Price: Low to High', sort_by: 'price', sort: 'asc' },
+    { name: 'Price: High to Low', sort_by: 'price', sort: 'desc' },
 ]
 
 const filters = [
@@ -56,7 +56,11 @@ function classNames(...classes) {
 }
 
 const ProductSection = () => {
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+    const dispatch = useDispatch()
+    const { sortOption } = useSelector(({ common }) => common);
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+    console.log({ sortOption })
+
 
     return (
         <div className="bg-white">
@@ -156,7 +160,7 @@ const ProductSection = () => {
                             <Menu as="div" className="relative inline-block text-left">
                                 <div>
                                     <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                        Sort
+                                        {sortOption?.name || 'Most Popular'}
                                         <ChevronDownIcon
                                             className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                                             aria-hidden="true"
@@ -178,16 +182,20 @@ const ProductSection = () => {
                                             {sortOptions.map((option) => (
                                                 <Menu.Item key={option.name}>
                                                     {({ active }) => (
-                                                        <a
-                                                            href={option.href}
-                                                            className={classNames(
-                                                                option.current ? 'font-medium text-gray-900' : 'text-gray-500',
+                                                        <span
+                                                            className={`${classNames(
+                                                                sortOption?.name === option?.name ? 'font-medium text-gray-900' : 'text-gray-500',
                                                                 active ? 'bg-gray-100' : '',
                                                                 'block px-4 py-2 text-sm'
-                                                            )}
+                                                            )}`}
+                                                            onClick={() => dispatch(setSortOption({
+                                                                name: option.name,
+                                                                sort_by: option?.sort_by,
+                                                                sort: option?.sort
+                                                            }))}
                                                         >
-                                                            {option.name}
-                                                        </a>
+                                                            {option?.name}
+                                                        </span>
                                                     )}
                                                 </Menu.Item>
                                             ))}

@@ -5,7 +5,7 @@ import { validationSchema } from "./schema";
 import { initialValues } from "./constants";
 import { useMutation } from "@tanstack/react-query"
 import { signInRequest } from "./actions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showSuccessToast } from "../../utils/toast";
 import { signIn } from "../../redux/slices/authSlice";
@@ -14,6 +14,7 @@ import { signIn } from "../../redux/slices/authSlice";
 
 const SignInPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {
         handleSubmit,
         formState: { errors },
@@ -28,7 +29,9 @@ const SignInPage = () => {
         mutationFn: signInRequest,
         onSuccess: (data) => {
             showSuccessToast(data?.data?.message);
+            console.log('here...')
             dispatch(signIn(data?.data?.data))
+            navigate('/');
         }
     })
 

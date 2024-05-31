@@ -34,7 +34,7 @@ const product = {
     ],
     colors: [
         { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
-        { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
+        { name: 'Red', class: 'bg-red-500', selectedClass: 'bg-red-500' },
         { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
     ],
     sizes: [
@@ -73,7 +73,9 @@ const ProductOverview = () => {
     const [selectedColor, setSelectedColor] = useState({ name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' })
     const [selectedSize, setSelectedSize] = useState(
         { name: 'XS', inStock: true },
-    )
+    );
+
+
     const { state = {} } = useLocation();
     const { product: productState = {} } = state;
     const { data: productsData = {} } = useQuery({
@@ -233,7 +235,7 @@ const ProductOverview = () => {
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-sm font-medium text-gray-900">Size</h3>
                                     <a className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                        Size Guide test
+                                        Size Guide
                                     </a>
                                 </div>
 
@@ -254,6 +256,7 @@ const ProductOverview = () => {
                                                         'group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6'
                                                     )
                                                 }
+                                                onClick={() => console.log(size)}
                                             >
                                                 {({ active, checked }) => (
                                                     <>
