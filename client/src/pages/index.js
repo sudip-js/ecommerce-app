@@ -5,3 +5,4 @@ export { default as PageNotFoundPage } from "./page-not-found";
 export { default as ForgotPasswordPage } from "./forgot-password";
 export { default as ResetPasswordPage } from "./reset-password";
 export { default as Cart } from "./cart";
+export { default as CheckoutSuccess } from "./checkout/CheckoutSuccess";

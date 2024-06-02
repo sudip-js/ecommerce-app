@@ -1,5 +1,5 @@
 import React from 'react'
-import { Banner, CategoryPreview, Header, PromoSection } from '../../components'
+import { CategoryPreview, PromoSection, Testimonial } from '../../components'
 
 const HomePage = () => {
     return (
@@ -9,7 +9,7 @@ const HomePage = () => {
                 description: "This year, our new summer collection will shelter you from the harsh elements of a world that doesn't care if you live or die."
             }} />
             <CategoryPreview label="Shop by Category" />
-            <Banner />
+            <Testimonial />
             <CategoryPreview label="Shop by Collection" />
             <PromoSection {...{
                 title: 'Final Stock. Up to 50% off.',

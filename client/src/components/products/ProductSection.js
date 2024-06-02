@@ -1,11 +1,11 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import ProductList from './ProductList'
-import Pagination from '../pagination'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSortOption } from '../../redux/slices/commonSlice'
+import { Link, useLocation } from 'react-router-dom'
 
 const sortOptions = [
     { name: 'Best Rating', sort_by: 'rating', sort: 'asc' },
@@ -13,41 +13,11 @@ const sortOptions = [
     { name: 'Price: High to Low', sort_by: 'price', sort: 'desc' },
 ]
 
-const filters = [
+const tempFilters = [
     {
-        id: 'color',
-        name: 'Color',
-        options: [
-            { value: 'white', label: 'White', checked: false },
-            { value: 'beige', label: 'Beige', checked: false },
-            { value: 'blue', label: 'Blue', checked: true },
-            { value: 'brown', label: 'Brown', checked: false },
-            { value: 'green', label: 'Green', checked: false },
-            { value: 'purple', label: 'Purple', checked: false },
-        ],
-    },
-    {
-        id: 'category',
-        name: 'Category',
-        options: [
-            { value: 'new-arrivals', label: 'New Arrivals', checked: false },
-            { value: 'sale', label: 'Sale', checked: false },
-            { value: 'travel', label: 'Travel', checked: true },
-            { value: 'organization', label: 'Organization', checked: false },
-            { value: 'accessories', label: 'Accessories', checked: false },
-        ],
-    },
-    {
-        id: 'size',
-        name: 'Size',
-        options: [
-            { value: '2l', label: '2L', checked: false },
-            { value: '6l', label: '6L', checked: false },
-            { value: '12l', label: '12L', checked: false },
-            { value: '18l', label: '18L', checked: false },
-            { value: '20l', label: '20L', checked: false },
-            { value: '40l', label: '40L', checked: true },
-        ],
+        id: 'brand',
+        name: 'Brand',
+        options: []
     },
 ]
 
@@ -55,11 +25,29 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+
+
 const ProductSection = () => {
     const dispatch = useDispatch()
+    const { pathname = '' } = useLocation();
+    const tempPathname = pathname?.replaceAll('/', '');
     const { sortOption } = useSelector(({ common }) => common);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-    console.log({ sortOption })
+    const [apiResponse, setApiResponse] = useState({})
+    const [filters, setFilters] = useState([...tempFilters])
+
+    useEffect(() => {
+        if (apiResponse?.length > 0) {
+            const uniqueFilters = [...new Set(apiResponse?.map(item => item?.brand))];
+            const options = uniqueFilters?.map(item => ({ label: item, value: item, checked: false }));
+            setFilters([{
+                id: 'brand',
+                name: 'Brand',
+                options
+            }])
+        }
+    }, [apiResponse])
+
 
 
     return (
@@ -154,7 +142,33 @@ const ProductSection = () => {
                 </Transition.Root>
                 <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex items-baseline justify-between border-b border-gray-200 py-4">
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">All Products</h1>
+
+                        <nav aria-label="Breadcrumb">
+                            <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+                                <li>
+                                    <div className="flex items-center">
+                                        <Link to='/' className="mr-2 text-sm font-medium text-gray-900">
+                                            Home
+                                        </Link>
+                                        <svg
+                                            width={16}
+                                            height={20}
+                                            viewBox="0 0 16 20"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                            className="h-5 w-4 text-gray-300"
+                                        >
+                                            <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                                        </svg>
+                                    </div>
+                                </li>
+                                <li className="text-sm">
+                                    <button disabled type='button' aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
+                                        {tempPathname}
+                                    </button>
+                                </li>
+                            </ol>
+                        </nav>
 
                         <div className="flex items-center">
                             <Menu as="div" className="relative inline-block text-left">
@@ -183,7 +197,7 @@ const ProductSection = () => {
                                                 <Menu.Item key={option.name}>
                                                     {({ active }) => (
                                                         <span
-                                                            className={`${classNames(
+                                                            className={`cursor-pointer ${classNames(
                                                                 sortOption?.name === option?.name ? 'font-medium text-gray-900' : 'text-gray-500',
                                                                 active ? 'bg-gray-100' : '',
                                                                 'block px-4 py-2 text-sm'
@@ -273,11 +287,11 @@ const ProductSection = () => {
 
                             {/* Product grid */}
                             <div className="lg:col-span-3">
-                                <ProductList />
+                                <ProductList setApiResponse={setApiResponse} />
                             </div>
                         </div>
                     </section>
-                    <Pagination />
+                    {/* <Pagination /> */}
 
                 </main>
             </div>

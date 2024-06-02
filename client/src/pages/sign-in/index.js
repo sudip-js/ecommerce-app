@@ -29,9 +29,8 @@ const SignInPage = () => {
         mutationFn: signInRequest,
         onSuccess: (data) => {
             showSuccessToast(data?.data?.message);
-            console.log('here...')
             dispatch(signIn(data?.data?.data))
-            navigate('/');
+            navigate(-1);
         }
     })
 

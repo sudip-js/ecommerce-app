@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { signInWithGoogleRequest, signInWithGithubRequest } from './actions';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -23,6 +24,7 @@ const authProvider = {
 
 const OAuth = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [authType, setAuthType] = useState(null)
 
     const { mutate: mutateOAuth } = useMutation({
@@ -30,6 +32,7 @@ const OAuth = () => {
         onSuccess: (data) => {
             showSuccessToast(data?.data?.message);
             dispatch(signIn(data?.data?.data))
+            navigate(-1)
         }
     })
 

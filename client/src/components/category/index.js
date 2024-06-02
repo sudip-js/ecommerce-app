@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { fetchCategories } from "./actions";
 
+
+const removeSlashFromURL = (url) => url.replaceAll('/', '');
 const CategoryPreview = ({ label = '' }) => {
     const navigate = useNavigate();
     const { data: categoriesData } = useQuery({
@@ -17,7 +19,7 @@ const CategoryPreview = ({ label = '' }) => {
 
                     <div className="mt-6 space-y-12 lg:grid lg:grid-cols-5 lg:gap-x-6 lg:space-y-0">
                         {categoriesData?.data?.map(({ name = '', thumbnail = '', discount_percentage = '' }) => (
-                            <div key={name} className="group relative cursor-pointer" onClick={() => navigate(`/${name}`)}>
+                            <div key={name} className="group relative cursor-pointer" onClick={() => navigate(`/${removeSlashFromURL(name)}`)}>
                                 <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
                                     <img
                                         src={thumbnail}

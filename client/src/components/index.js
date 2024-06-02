@@ -8,3 +8,4 @@ export { default as PromoSection } from "./promo-section";
 export { default as CategoryPreview } from "./category";
 export { default as Banner } from "./banner";
 export { default as ProductOverview } from "./products/ProductOverview";
+export { default as Testimonial } from "./testimonial";

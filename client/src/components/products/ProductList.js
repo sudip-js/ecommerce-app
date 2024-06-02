@@ -3,24 +3,27 @@ import { fetchCategory } from "./actions";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 
-const removeSpaceFromURL = (url) => url?.replaceAll(' ', '-')
+const removeSpaceFromURL = (url) => url?.replaceAll(' ', '-');
+const removeSlashFromURL = (url) => url.replaceAll('/', '');
 
-const ProductList = () => {
+
+const ProductList = ({ setApiResponse = () => { } } = {}) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const category_id = pathname.replace('/', '');
     const { sortOption = {} } = useSelector(({ common }) => common)
-    console.log({ sortOption })
     const { data: productsData = {} } = useQuery({
         queryKey: ['fetchCategory', category_id, sortOption?.sort, sortOption?.sort_by],
         queryFn: () => fetchCategory({ category_id, sort_by: sortOption?.sort_by || undefined, sort: sortOption?.sort || undefined }),
-        select: data => data?.data,
+        select: (data) => {
+            setApiResponse(data?.data?.data);
+            return data?.data
+        },
         enabled: !!category_id
     });
     const handleNavigate = (product) => {
         const { category = '', title = '' } = product || {};
-        console.log({ product })
-        navigate(`/${removeSpaceFromURL(category)}/${removeSpaceFromURL(title)}`, {
+        navigate(`/${removeSpaceFromURL(removeSlashFromURL(category))}/${removeSpaceFromURL(removeSlashFromURL(title))}`, {
             state: {
                 product
             }
@@ -34,7 +37,7 @@ const ProductList = () => {
                     {productsData?.data?.map((product) => {
                         const { _id = '', thumbnail = "", title = '', price = '', rating = 5 } = product || {};
                         return (
-                            <div key={_id} className="group relative" onClick={() => handleNavigate(product)}>
+                            <div key={_id} className="group relative cursor-pointer" onClick={() => handleNavigate(product)}>
                                 <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                                     <img
                                         src={thumbnail}

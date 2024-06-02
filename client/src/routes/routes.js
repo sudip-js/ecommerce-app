@@ -1,5 +1,5 @@
 import { createBrowserRouter, } from "react-router-dom";
-import { Cart, ForgotPasswordPage, HomePage, PageNotFoundPage, ResetPasswordPage, SignInPage, SignUpPage } from "../pages";
+import { Cart, CheckoutSuccess, ForgotPasswordPage, HomePage, PageNotFoundPage, ResetPasswordPage, SignInPage, SignUpPage } from "../pages";
 import { ProductOverview, ProductSection } from "../components";
 import { PublicLayout } from "../layouts";
 
@@ -39,6 +39,10 @@ const router = createBrowserRouter([
             {
                 path: "cart",
                 element: <Cart />
+            },
+            {
+                path: "checkout-success",
+                element: <CheckoutSuccess />
             },
         ]
     },
