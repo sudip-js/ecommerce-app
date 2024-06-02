@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
     (config) => {
-        config.baseURL = 'http://localhost:8090/api/'
+        config.baseURL = 'https://ecommerce-app-vert-xi.vercel.app/api/'
         return config;
     },
     (error) => {
