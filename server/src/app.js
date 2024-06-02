@@ -14,7 +14,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: ['https://ecommerce-app-frontend-woad.vercel.app'],
+    methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+}));
 
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
