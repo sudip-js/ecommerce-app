@@ -7,7 +7,7 @@ import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 
-dotenv.config({ path: './src/.env' });
+dotenv.config({ path: '.env' });
 connectDB()
 
 const app = express();
