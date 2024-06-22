@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cors({
-    origin: ['https://ecommerce-app-frontend-ruddy.vercel.app'],
+    origin: [process.env.CLIENT_BASE_URL],
     methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
 }));

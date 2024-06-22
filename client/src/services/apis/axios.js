@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
     (config) => {
-        config.baseURL = 'https://ecommerce-app-eta-inky.vercel.app/api'
+        config.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`;
         return config;
     },
     (error) => {
