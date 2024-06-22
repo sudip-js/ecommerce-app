@@ -9,7 +9,6 @@ export const addCategories = async (req, res, next) => {
         await Category.insertMany(categoriesArray);
         res.status(200).json({ success: true, message: 'Category added successfully.' })
     } catch (error) {
-        console.log({ error })
         return next(errorHandler(500, "Something went wrong!."));
     }
 }

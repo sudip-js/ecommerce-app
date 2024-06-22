@@ -72,7 +72,6 @@ const ProductOverview = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const { state = {}, pathname = '' } = useLocation();
-    console.log({ pathname })
     const { product: productState = {} } = state;
     const { data: productsData = {} } = useQuery({
         queryKey: ["fetchCategoryProduct", productState?.category, productState?.title],

@@ -7,7 +7,7 @@ export const createToken = (payload) => {
             expiresIn: '1d'
         })
     } catch (error) {
-        console.log({ error })
+        console.error({ error })
     }
 }
 

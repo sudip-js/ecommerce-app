@@ -162,7 +162,6 @@ export const changePassword = async (req, res, next) => {
     await user.save();
     res.status(200).json({ success: true, message: "Password has been changed successfully." });
   } catch (error) {
-    console.log({ error: error?.message })
     return next(errorHandler(500, "Something went wrong!."));
   }
 };
@@ -181,7 +180,6 @@ export const updateProfile = async (req, res, next) => {
     const { password: removePassword, ...rest } = response?._doc;
     res.status(200).json({ success: true, message: "Profile updated successfully.", data: { ...rest } });
   } catch (error) {
-    console.log({ error: error?.message })
     return next(errorHandler(500, "Something went wrong!."));
   }
 };
