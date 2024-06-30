@@ -7,6 +7,8 @@ import { fetchCategoryProduct } from "./actions";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/slices/cartSlice";
 import { showErrorToast } from "../../utils/toast";
+import { FaStar } from "react-icons/fa";
+
 const product = {
     name: "Basic Tee 6-Pack",
     price: "$192",
@@ -169,28 +171,23 @@ const ProductOverview = () => {
                     {/* Options */}
                     <div className="mt-4 lg:row-span-3 lg:mt-0">
                         <h2 className="sr-only">Product information</h2>
-                        <p className="text-3xl tracking-tight text-gray-900">${productsData?.price}</p>
+                        <div className="">
+                            <p className="font-semibold text-slate-400">{productsData?.brand}</p>
+                            <p className="font-semibold text-gray-600">{productsData?.title}</p>
+                        </div>
+                        <p className="font-semibold text-green-600">Special Price</p>
+                        <div className="flex items-center gap-3 mt-3">
+                            <p className="text-3xl tracking-tight text-gray-900">${productsData?.discounted_price}</p>
+                            <del className="text-md text-gray-900">${productsData?.total_price}</del>
+                            <p className="text-md font-semibold text-green-600">{productsData?.discount_percentage}% Off</p>
+                        </div>
 
                         {/* Reviews */}
-                        <div className="mt-6">
-                            <h3 className="sr-only">Reviews</h3>
-                            <div className="flex items-center">
-                                <div className="flex items-center">
-                                    {ratingArr?.map((_, index) => (
-                                        <StarIcon
-                                            key={index}
-                                            className={classNames(
-                                                reviews.average > index ? "text-gray-900" : "text-gray-200",
-                                                "h-5 w-5 flex-shrink-0"
-                                            )}
-                                            aria-hidden="true"
-                                        />
-                                    ))}
-                                </div>
-                                <p className="sr-only">{reviews.average} out of 5 stars</p>
-                                <a href={reviews.href} className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                    {reviewCashed} reviews
-                                </a>
+                        <div className="mt-3">
+                            <h2 className="sr-only">Reviews</h2>
+                            <div className="flex items-center gap-3">
+                                <span className="flex items-center bg-green-600 rounded-3xl text-white px-4 py-1 font-semibold gap-1">4.1 <FaStar /></span>
+                                <span className="text-gray-500 font-semibold">{productsData?.rating} Ratings and {productsData?.reviews} Reviews</span>
                             </div>
                         </div>
 
@@ -317,19 +314,6 @@ const ProductOverview = () => {
                                 </p>
                             </div>
                         </div>
-
-                        <div className="mt-10">
-                            <h3 className="text-sm font-medium text-gray-900">Brand</h3>
-
-                            <div className="mt-4">
-                                <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                                    <li className="text-gray-400">
-                                        <span className="text-gray-600">{productsData?.brand}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
                         <div className="mt-10">
                             <h2 className="text-sm font-medium text-gray-900">Details</h2>
 

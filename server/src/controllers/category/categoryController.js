@@ -3,12 +3,15 @@ import Product from "../../modals/productModal.js";
 import { errorHandler } from "../../utils/error.js";
 
 export const addCategories = async (req, res, next) => {
+    console.log('gere....')
     try {
         const { categories = [] } = req.body;
+        console.log({ categories })
         const categoriesArray = categories.map(({ name, thumbnail, discount_percentage }) => ({ name, thumbnail, discount_percentage }))
         await Category.insertMany(categoriesArray);
         res.status(200).json({ success: true, message: 'Category added successfully.' })
     } catch (error) {
+        console.log('error=>', error?.message)
         return next(errorHandler(500, "Something went wrong!."));
     }
 }

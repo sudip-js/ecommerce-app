@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const productModal = new Schema({
+    brand: {
+        type: String,
+        required: true
+    },
     title: {
         type: String,
         required: true
@@ -10,11 +14,15 @@ const productModal = new Schema({
         type: String,
         required: true
     },
-    price: {
+    discounted_price: {
         type: Number,
         required: true
     },
-    discountPercentage: {
+    total_price: {
+        type: Number,
+        required: true
+    },
+    discount_percentage: {
         type: Number,
         required: true
     },
@@ -22,12 +30,16 @@ const productModal = new Schema({
         type: Number,
         required: true
     },
-    stock: {
+    reviews: {
         type: Number,
         required: true
     },
-    brand: {
-        type: String,
+    star: {
+        type: Number,
+        required: true
+    },
+    stock: {
+        type: Number,
         required: true
     },
     category: {

@@ -12,7 +12,7 @@ const categoryModal = new Schema({
         required: true
     },
     discount_percentage: {
-        type: Number,
+        type: String,
         required: true
     },
 

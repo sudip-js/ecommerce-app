@@ -9,6 +9,7 @@ export const addProducts = async (req, res, next) => {
             .status(200)
             .json({ success: true, message: "Products added successfully." });
     } catch (error) {
+        console.log('err', error?.message)
         return next(errorHandler(500, "Something went wrong!."));
     }
 };

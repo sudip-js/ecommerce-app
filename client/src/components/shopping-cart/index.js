@@ -6,6 +6,7 @@ import EmprtCartImage from "../../assets/images/empty-cart-image.webp"
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { stripeCheckout } from "./actions";
+import { loadStripe } from '@stripe/stripe-js';
 
 const ShoppingCart = () => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const ShoppingCart = () => {
         return { cart, user }
     });
 
-    const { isPending: isPendingStripeCheckout, mutate: mutateStripeCheckout } = useMutation({
+    const { isPending: isPendingStripeCheckout, mutateAsync: mutateAsyncStripeCheckout } = useMutation({
         mutationFn: stripeCheckout,
         onSuccess: (data) => {
             console.log({ data })
@@ -39,9 +40,12 @@ const ShoppingCart = () => {
     const handleCheckout = async () => {
         if (!user?.access_token) return navigate('/sign-in')
         if (!cart?.cartItems?.length) return;
-        mutateStripeCheckout({
-            products: cart?.cartItems,
-        });
+        try {
+            const response = await mutateAsyncStripeCheckout({ cartItems: cart?.cartItems, userId: user?._id });
+            console.log({ response })
+        } catch (error) {
+            console.log(error)
+        }
     };
 
 
@@ -88,7 +92,7 @@ const ShoppingCart = () => {
                                     </thead>
                                     <tbody>
                                         {cart?.cartItems?.map((product) => {
-                                            const { _id = "", title = "", description = "", price = "", thumbnail = "", cartQuantity = 1, size = '', color = '' } =
+                                            const { _id = "", title = "", discounted_price = "", total_price = '', discount_percentage = "", thumbnail = "", cartQuantity = 1, size = '', color = '', brand = '' } =
                                                 product || {};
                                             return (
                                                 <tr key={_id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -98,10 +102,15 @@ const ShoppingCart = () => {
                                                                 <img src={thumbnail} alt={title} className="h-full w-full object-cover object-center" />
                                                             </div>
                                                             <div className="space-y-1">
+                                                                <p className="text-base font-medium text-slate-500">{brand}</p>
                                                                 <p className="text-base font-medium text-gray-900">{title}</p>
-                                                                <p className="text-sm text-gray-500">Size:&nbsp;{size}</p>
-                                                                <p className="text-sm text-gray-500">Color:&nbsp;{color}</p>
-                                                                <p className="text-sm text-gray-500 w-72 text-wrap">{description}</p>
+                                                                <p className="text-sm text-gray-500">size:&nbsp;{size}</p>
+                                                                <p className="text-sm text-gray-500">color:&nbsp;{color}</p>
+                                                                <div className="flex items-center gap-3">
+                                                                    <del className="text-slate-400">${total_price}</del>
+                                                                    <span className="text-black font-semibold text-xl">${discounted_price}</span>
+                                                                    <span className="font-semibold text-sm text-green-600">{discount_percentage}% off</span>
+                                                                </div>
                                                                 <p
                                                                     className="text-sm text-red-500 cursor-pointer"
                                                                     onClick={() => handleRemoveFromCart(product)}
@@ -111,7 +120,7 @@ const ShoppingCart = () => {
                                                             </div>
                                                         </div>
                                                     </th>
-                                                    <td class="px-6 py-4">${price}</td>
+                                                    <td class="px-6 py-4">${discounted_price}</td>
                                                     <td class="px-6 py-4">
                                                         <div class="inline-flex rounded-md shadow-sm" role="group">
                                                             <button
@@ -136,7 +145,7 @@ const ShoppingCart = () => {
                                                             </button>
                                                         </div>
                                                     </td>
-                                                    <td class="px-6 py-4">${price * cartQuantity}</td>
+                                                    <td class="px-6 py-4">${discounted_price * cartQuantity}</td>
                                                 </tr>
                                             );
                                         })}

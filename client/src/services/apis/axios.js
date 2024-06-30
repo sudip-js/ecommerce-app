@@ -10,7 +10,8 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
     (config) => {
-        const API_URL = process.env.REACT_APP_API_BASE_URL;
+        // const API_URL = process.env.REACT_APP_API_BASE_URL;
+        const API_URL = 'http://localhost:8090';
         config.baseURL = `${API_URL}/api`;
         return config;
     },
